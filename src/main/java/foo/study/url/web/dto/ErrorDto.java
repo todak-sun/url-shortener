@@ -2,14 +2,14 @@ package foo.study.url.web.dto;
 
 public class ErrorDto {
     public static class NotFound {
-        private Object id;
+        private final Object notFoundResource;
 
-        public NotFound(Object id) {
-            this.id = id;
+        public NotFound(Object notFoundResource) {
+            this.notFoundResource = notFoundResource;
         }
 
-        public Object getId() {
-            return id;
+        public Object getNotFoundResource() {
+            return notFoundResource;
         }
     }
 }

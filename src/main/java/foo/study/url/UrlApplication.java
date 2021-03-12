@@ -3,12 +3,10 @@ package foo.study.url;
 import foo.study.url.domain.UrlHashMapRepository;
 import foo.study.url.domain.UrlRepository;
 import foo.study.url.ifs.IdGenerator;
-import foo.study.url.util.UUIDGenerator;
+import foo.study.url.util.HashAndEncode64IdGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-
-import java.util.UUID;
 
 @SpringBootApplication
 public class UrlApplication {
@@ -25,7 +23,7 @@ public class UrlApplication {
 
     @Bean
     public IdGenerator idGenerator() {
-        return new UUIDGenerator();
+        return new HashAndEncode64IdGenerator();
     }
 
 }

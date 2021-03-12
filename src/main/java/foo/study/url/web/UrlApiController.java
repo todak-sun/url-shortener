@@ -1,6 +1,6 @@
 package foo.study.url.web;
 
-import foo.study.url.domain.Url;
+import foo.study.url.domain.ShortenURL;
 import foo.study.url.domain.UrlRepository;
 import foo.study.url.exception.NotFoundException;
 import foo.study.url.web.dto.UrlDto;
@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequestMapping("/")
 @RestController
@@ -24,20 +26,27 @@ public class UrlApiController {
 
     @PostMapping
     public ResponseEntity<?> create(@RequestBody UrlDto.Req.Create req) {
-        String id = urlRepository.save(new Url(req.getUrl())).getId();
-        UrlDto.Res.Create res = new UrlDto.Res.Create(id);
+        ShortenURL save = urlRepository.save(new ShortenURL(req.getUrl()));
+        UrlDto.Res.Create res = new UrlDto.Res.Create(save);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(res);
 
     }
 
+    @GetMapping("/logs")
+    public ResponseEntity<?> fetchAll() {
+        List<UrlDto.Res.Create> res = urlRepository.findAll().stream().map(UrlDto.Res.Create::new).collect(Collectors.toList());
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(res);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> fetchOne(@PathVariable String id) throws URISyntaxException {
-        Url url = urlRepository.findById(id).orElseThrow(() -> {
+        ShortenURL shortenURL = urlRepository.findById(id).orElseThrow(() -> {
             throw new NotFoundException(id);
         });
 
-        URI redirectUri = new URI(url.getUrl());
+        URI redirectUri = new URI(shortenURL.getUrl());
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(redirectUri);
 

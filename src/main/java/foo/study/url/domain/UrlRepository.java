@@ -4,6 +4,8 @@ import foo.study.url.ifs.MemoryRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UrlRepository extends MemoryRepository<Url, String> {
+public interface UrlRepository extends MemoryRepository<ShortenURL, String> {
+
+    boolean existsByUrl(String url);
 
 }

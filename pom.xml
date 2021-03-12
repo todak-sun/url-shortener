@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>foo.study</groupId>
-	<artifactId>url</artifactId>
+	<artifactId>shortenURL</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>url</name>
+	<name>shortenURL</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>11</java.version>

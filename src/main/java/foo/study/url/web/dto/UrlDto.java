@@ -1,28 +1,32 @@
 package foo.study.url.web.dto;
 
+import foo.study.url.domain.ShortenURL;
+
 public class UrlDto {
     public static class Req {
-        public static class Create{
+        public static class Create {
             private String url;
+
             public void setUrl(String url) {
                 this.url = url;
             }
+
             public String getUrl() {
                 return url;
             }
         }
     }
+
     public static class Res {
-        public static class Create{
+        public static class Create {
+            private String url;
 
-            private String shortenURl;
-
-            public Create(String shortenURl) {
-                this.shortenURl = shortenURl;
+            public Create(ShortenURL shortenURL) {
+                this.url = shortenURL.getUrl();
             }
 
-            public String getShortenURl() {
-                return shortenURl;
+            public String getUrl() {
+                return url;
             }
         }
     }
