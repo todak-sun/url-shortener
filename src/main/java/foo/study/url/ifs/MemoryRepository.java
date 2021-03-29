@@ -3,6 +3,7 @@ package foo.study.url.ifs;
 import java.util.List;
 import java.util.Optional;
 
+@Deprecated
 public interface MemoryRepository<E, ID> {
     Optional<E> findById(ID id);
 

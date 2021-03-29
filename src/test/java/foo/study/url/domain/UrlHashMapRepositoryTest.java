@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ShortenURLRepositoryTest {
+class UrlHashMapRepositoryTest {
 
     UrlRepository urlRepository;
 
@@ -27,7 +27,7 @@ class ShortenURLRepositoryTest {
     @Test
     public void save_test() {
         //given
-        ShortenURL shortenURL = new ShortenURL("https://www.naver.com");
+        ShortenURL shortenURL = ShortenURL.builder().url("www.naver.com").build();
 
         //when & then
         assertNull(shortenURL.getId());
@@ -41,10 +41,10 @@ class ShortenURLRepositoryTest {
 
         //given
         String targetURL = "https//www.google.com";
-        String expected = urlRepository.save(new ShortenURL(targetURL)).getId();
+        String expected = urlRepository.save(ShortenURL.builder().url(targetURL).build()).getId();
 
         //when
-        IntStream.range(0, 100).mapToObj((n) -> new ShortenURL(targetURL))
+        IntStream.range(0, 100).mapToObj((n) -> ShortenURL.builder().url(targetURL).build())
                 .forEach(url -> {
                     //then
                     assertEquals(expected, urlRepository.save(url).getId());
@@ -60,7 +60,7 @@ class ShortenURLRepositoryTest {
 
         //when
         urlStream.forEach(url -> {
-            String newId = urlRepository.save(new ShortenURL(url)).getId();
+            String newId = urlRepository.save(ShortenURL.builder().url(url).build()).getId();
             assertNotEquals(ref.get(), newId);
             ref.set(newId);
         });
@@ -72,10 +72,10 @@ class ShortenURLRepositoryTest {
         //given
         urlRepository.deleteAll();
         int N = 100;
-        
+
         //when
         IntStream.range(0, N).mapToObj(n -> "www." + UUID.randomUUID().toString().replaceAll("-", "") + ".com")
-                .forEach(url -> urlRepository.save(new ShortenURL(url)));
+                .forEach(url -> urlRepository.save(ShortenURL.builder().url(url).build()));
 
         //then
         assertEquals(N, urlRepository.findAll().size());

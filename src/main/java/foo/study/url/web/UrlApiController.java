@@ -26,10 +26,8 @@ public class UrlApiController {
 
     @PostMapping
     public ResponseEntity<?> create(@RequestBody UrlDto.Req.Create req) {
-        ShortenURL save = urlRepository.save(new ShortenURL(req.getUrl()));
-        UrlDto.Res.Create res = new UrlDto.Res.Create(save);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(res);
+
+        return null;
 
     }
 

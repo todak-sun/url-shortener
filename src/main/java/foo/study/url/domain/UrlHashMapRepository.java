@@ -1,17 +1,13 @@
 package foo.study.url.domain;
 
-import foo.study.url.annotation.FakeId;
 import foo.study.url.ifs.IdGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import javax.persistence.Id;
 import java.lang.reflect.Field;
 import java.util.*;
 
-
+@Deprecated
 public class UrlHashMapRepository implements UrlRepository {
-
-    private final Logger log = LoggerFactory.getLogger(UrlHashMapRepository.class);
 
     private final HashMap<String, ShortenURL> idMemo;
     private final HashMap<String, ShortenURL> urlMemo;
@@ -89,17 +85,16 @@ public class UrlHashMapRepository implements UrlRepository {
     private void persist(ShortenURL shortenURL) {
         Field idField = Arrays.stream(ShortenURL.class.getDeclaredFields())
                 .filter(field -> Arrays.stream(field.getDeclaredAnnotations())
-                        .anyMatch(an -> an.annotationType() == FakeId.class))
+                        .anyMatch(an -> an.annotationType() == Id.class))
                 .findFirst()
                 .orElseThrow(() -> {
-                    throw new IllegalArgumentException("Not Found @FakeId");
+                    throw new IllegalArgumentException("Not Found @Id");
                 });
 
         idField.setAccessible(true);
         String id = idGenerator.generate(shortenURL.getUrl());
         while (!existsById(id)) {
             try {
-                log.info("generatedId : {}", id);
                 idField.set(shortenURL, id);
                 idMemo.put(id, shortenURL);
                 urlMemo.put(shortenURL.getUrl(), shortenURL);
