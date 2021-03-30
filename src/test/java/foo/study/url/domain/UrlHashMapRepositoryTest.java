@@ -1,7 +1,7 @@
 package foo.study.url.domain;
 
-import foo.study.url.ifs.IdGenerator;
-import foo.study.url.util.HashAndEncode64IdGenerator;
+import foo.study.url.ifs.PathGenerator;
+import foo.study.url.util.HashAndEncode64PathGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,8 +19,8 @@ class UrlHashMapRepositoryTest {
 
     @BeforeEach
     public void setUp() {
-        IdGenerator idGenerator = new HashAndEncode64IdGenerator();
-        this.urlRepository = new UrlHashMapRepository(idGenerator);
+        PathGenerator pathGenerator = new HashAndEncode64PathGenerator();
+        this.urlRepository = new UrlHashMapRepository(pathGenerator);
     }
 
     @DisplayName("저장할 경우 자동으로 ID가 부여된다.")

@@ -1,33 +1,23 @@
 package foo.study.url.web.dto;
 
 import foo.study.url.domain.ShortenURL;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 public class UrlDto {
     public static class Req {
+        @Getter
         public static class Create {
             private String url;
-
-            public void setUrl(String url) {
-                this.url = url;
-            }
-
-            public String getUrl() {
-                return url;
-            }
         }
     }
 
     public static class Res {
+        @Getter
+        @AllArgsConstructor
         public static class Create {
             private String url;
-
-            public Create(ShortenURL shortenURL) {
-                this.url = shortenURL.getUrl();
-            }
-
-            public String getUrl() {
-                return url;
-            }
         }
     }
 }

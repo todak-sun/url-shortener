@@ -1,8 +1,8 @@
 package foo.study.url.domain;
 
-import foo.study.url.ifs.IdGenerator;
+import foo.study.url.annotation.FakeId;
+import foo.study.url.ifs.PathGenerator;
 
-import javax.persistence.Id;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -12,12 +12,12 @@ public class UrlHashMapRepository implements UrlRepository {
     private final HashMap<String, ShortenURL> idMemo;
     private final HashMap<String, ShortenURL> urlMemo;
 
-    private final IdGenerator idGenerator;
+    private final PathGenerator pathGenerator;
 
-    public UrlHashMapRepository(IdGenerator idGenerator) {
+    public UrlHashMapRepository(PathGenerator pathGenerator) {
         this.idMemo = new HashMap<>();
         this.urlMemo = new HashMap<>();
-        this.idGenerator = idGenerator;
+        this.pathGenerator = pathGenerator;
     }
 
     @Override
@@ -85,14 +85,14 @@ public class UrlHashMapRepository implements UrlRepository {
     private void persist(ShortenURL shortenURL) {
         Field idField = Arrays.stream(ShortenURL.class.getDeclaredFields())
                 .filter(field -> Arrays.stream(field.getDeclaredAnnotations())
-                        .anyMatch(an -> an.annotationType() == Id.class))
+                        .anyMatch(an -> an.annotationType() == FakeId.class))
                 .findFirst()
                 .orElseThrow(() -> {
-                    throw new IllegalArgumentException("Not Found @Id");
+                    throw new IllegalArgumentException("Not Found @FakeId");
                 });
 
         idField.setAccessible(true);
-        String id = idGenerator.generate(shortenURL.getUrl());
+        String id = pathGenerator.generate(shortenURL.getUrl());
         while (!existsById(id)) {
             try {
                 idField.set(shortenURL, id);

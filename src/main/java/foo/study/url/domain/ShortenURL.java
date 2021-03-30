@@ -1,22 +1,18 @@
 package foo.study.url.domain;
 
 
+import foo.study.url.annotation.FakeId;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
+@Deprecated
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "SHORTEN_URL")
-@Entity
 public class ShortenURL {
 
-    @Id
+    @FakeId
     private String id;
 
     private String url;
