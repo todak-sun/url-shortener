@@ -6,11 +6,14 @@ import foo.study.url.domain.entities.ShortURL;
 import foo.study.url.domain.repositories.OriginURLRepository;
 import foo.study.url.domain.repositories.RequestLogRepository;
 import foo.study.url.domain.repositories.ShortURLRepository;
+import foo.study.url.exception.NotFoundException;
 import foo.study.url.util.UniqueRandomPathGenerator;
 import foo.study.url.web.dto.ClientInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -54,6 +57,13 @@ public class UrlService {
 
 
         return shortURL.getOriginURL().getUrl();
+    }
+
+    public List<RequestLog> fetchRequestLogByPath(String path) {
+        ShortURL shortURL = shortURLRepository.findByPath(path).orElseThrow(() -> {
+            throw new NotFoundException(path);
+        });
+        return requestLogRepository.findAllByShortURL(shortURL);
     }
 
 

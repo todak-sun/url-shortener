@@ -1,6 +1,7 @@
 package foo.study.url.service;
 
 import foo.study.url.domain.entities.OriginURL;
+import foo.study.url.domain.entities.RequestLog;
 import foo.study.url.domain.entities.ShortURL;
 import foo.study.url.domain.repositories.OriginURLRepository;
 import foo.study.url.domain.repositories.RequestLogRepository;
@@ -135,6 +136,23 @@ class UrlServiceTest {
 
         //then
         assertEquals(TRY, requestLogRepository.findAllByShortURL(shortURL).size());
+    }
+
+    @DisplayName("서버에 존재하는 PATH에 쌓인 로그를 전부 가져온다.")
+    @Test
+    public void fetch_requestLog_by_path_test() {
+        //given
+        String url = "https://www.naver.com";
+        ShortURL shortURL = urlService.createShortURL(url);
+        String path = shortURL.getPath();
+
+        ClientInfo clientInfo = ClientInfo.builder().ip("127.0.0.1").referer("https://google.com").build();
+        //when
+        urlService.getOriginURLByPath(path, clientInfo);
+
+        //then
+        List<RequestLog> requestLogs = urlService.fetchRequestLogByPath(path);
+        assertEquals(1, requestLogs.size());
     }
 
 
