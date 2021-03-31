@@ -1,10 +1,9 @@
 package foo.study.url.web;
 
-import foo.study.url.domain.entities.RequestLog;
 import foo.study.url.domain.entities.ShortURL;
 import foo.study.url.service.UrlService;
 import foo.study.url.web.dto.ClientInfo;
-import foo.study.url.web.dto.LogDto;
+import foo.study.url.web.dto.Response;
 import foo.study.url.web.dto.UrlDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,27 +30,15 @@ public class UrlApiController {
         ShortURL shortURL = urlService.createShortURL(req.getUrl());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new UrlDto.Res.Create(shortURL.getPath()));
-
     }
 
-    @GetMapping("/logs")
-    public ResponseEntity<?> fetchAllPaths() {
-        //TODO: 서버에 생성된 줄인 URL을 모두 출력하기 구현
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(null);
-    }
-
-    @GetMapping("/logs/{path}")
-    public ResponseEntity<?> fetchAllLogsByPath(@PathVariable String path) {
-        List<RequestLog> requestLogs = urlService.fetchRequestLogByPath(path);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(requestLogs.stream().map(LogDto.Res.Get::new).collect(Collectors.toList()));
-    }
-
-    @GetMapping("/{path}")
+    @GetMapping("/{path}") //TODO: 추후 모듈 분리로 이동될 핸들러
     public ResponseEntity<?> redirect(@PathVariable String path, ClientInfo clientInfo) throws URISyntaxException {
         log.info("client info : {}", clientInfo);
-        String redirectURL = urlService.getOriginURLByPath(path, clientInfo);
+        ShortURL shortURL = urlService.fetchShortURLWithOriginURL(path);
+        String redirectURL = shortURL.getOriginURL().getUrl();
+
+        urlService.saveLog(shortURL, clientInfo);
 
         URI redirectUri = new URI(redirectURL);
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -62,10 +49,28 @@ public class UrlApiController {
                 .headers(httpHeaders).build();
     }
 
+    @GetMapping("/shorts")
+    public ResponseEntity<?> fetchAllPaths() {
+
+        List<UrlDto.Res.GetShortURL> body = urlService.fetchAllShortenURLs()
+                .stream().map(UrlDto.Res.GetShortURL::new)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new Response<>(body, "OK"));
+    }
+
+    @GetMapping("/shorts/{path}/logs")
+    public ResponseEntity<?> fetchShortURLWithLogsByPath(@PathVariable String path) {
+        ShortURL shortURL = urlService.fetchShortURLWithLogsByPath(path);
+        UrlDto.Res.GetShortURLWithLog data = new UrlDto.Res.GetShortURLWithLog(shortURL);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new Response<>(data, "OK"));
+    }
+
     @GetMapping
     public ResponseEntity<?> index() {
         return ResponseEntity.status(HttpStatus.OK).body("hello");
     }
-
 
 }

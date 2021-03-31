@@ -49,7 +49,7 @@ public class ShortURL extends BaseDateTimeEntity {
     }
 
     public void increaseRequestCount() {
-        this.requestCount += 1;
+        ++this.requestCount;
     }
 
     // ------ 연관관계 메서드 시작

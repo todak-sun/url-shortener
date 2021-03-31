@@ -28,7 +28,6 @@ public class UrlService {
 
     @Transactional
     public ShortURL createShortURL(String url) {
-
         OriginURL originURL = originURLRepository.findByUrl(url)
                 .orElseGet(() -> originURLRepository.save(OriginURL.builder().url(url).build()));
 
@@ -40,31 +39,30 @@ public class UrlService {
     }
 
     @Transactional
-    public String getOriginURLByPath(String path, ClientInfo clientInfo) {
-        ShortURL shortURL = shortURLRepository.findByPath(path)
-                .orElseThrow(() -> {
-                    //TODO: 적절한 에러 생성 후 에러코드 반환할 것.
-                    throw new IllegalArgumentException();
-                });
-
+    public RequestLog saveLog(ShortURL shortURL, ClientInfo clientInfo) {
         RequestLog requestLog = RequestLog.builder()
                 .ip(clientInfo.getIp())
                 .referer(clientInfo.getReferer())
                 .build();
-
         requestLog.loggedFrom(shortURL);
-        requestLogRepository.save(requestLog);
-
-
-        return shortURL.getOriginURL().getUrl();
+        return requestLogRepository.save(requestLog);
     }
 
-    public List<RequestLog> fetchRequestLogByPath(String path) {
-        ShortURL shortURL = shortURLRepository.findByPath(path).orElseThrow(() -> {
-            throw new NotFoundException(path);
-        });
-        return requestLogRepository.findAllByShortURL(shortURL);
+    public ShortURL fetchShortURLWithOriginURL(String path) {
+        return shortURLRepository.findByPathWithOriginURL(path)
+                .orElseThrow(() -> {
+                    throw new NotFoundException(path);
+                });
     }
 
+    public List<ShortURL> fetchAllShortenURLs() {
+        return shortURLRepository.findAllWithOriginURL();
+    }
 
+    public ShortURL fetchShortURLWithLogsByPath(String path) {
+        return shortURLRepository.findWithRequestLogsByPath(path)
+                .orElseThrow(() -> {
+                    throw new NotFoundException(path);
+                });
+    }
 }

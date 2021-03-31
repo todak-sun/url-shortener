@@ -1,5 +1,7 @@
 package foo.study.url.web.dto;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
@@ -10,10 +12,14 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import javax.servlet.http.HttpServletRequest;
 
+@Slf4j
+@RequiredArgsConstructor
 @Component
 public class ClientInfoArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private static final String[] IP_HEADER_CANDIDATES = {
+//    private final CachedUserAgentStringParser cachedUserAgentStringParser;
+
+    private final String[] IP_HEADER_CANDIDATES = {
             "X-Forwarded-For", "Proxy-Client-IP", "WL-Proxy-Client-IP",
             "HTTP_X_FORWARDED_FOR", "HTTP_X_FORWARDED", "HTTP_X_CLUSTER_CLIENT_IP",
             "HTTP_CLIENT_IP", "HTTP_FORWARDED_FOR", "HTTP_FORWARDED", "HTTP_VIA",
@@ -28,6 +34,16 @@ public class ClientInfoArgumentResolver implements HandlerMethodArgumentResolver
     @Override
     public Object resolveArgument(MethodParameter methodParameter, ModelAndViewContainer modelAndViewContainer, NativeWebRequest nativeWebRequest, WebDataBinderFactory webDataBinderFactory) throws Exception {
         HttpServletRequest request = (HttpServletRequest) nativeWebRequest.getNativeRequest();
+
+//        String userAgent = request.getHeader(HttpHeaders.USER_AGENT);
+//        ReadableUserAgent parse = cachedUserAgentStringParser.parse(userAgent);
+//
+//        log.info("origin user-agent : {}", userAgent);
+//
+//        log.info("name : {}", parse.getName());
+//        log.info("os : {}", parse.getOperatingSystem());
+//        log.info("category name : {}", parse.getDeviceCategory().getCategory().getName());
+//        log.info("versionNumber : {}", parse.getVersionNumber());
 
         return ClientInfo.builder()
                 .ip(getIpAddress(request))
