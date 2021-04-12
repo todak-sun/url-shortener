@@ -1,4 +1,5 @@
 # 간단한 URL 단축 서비스 만들기
+
 2021.03.07 ~
 
 ## 2차시
@@ -11,6 +12,67 @@
 4. 사용자는 그렇게 보관된 정보를 조회할 수 있다.
 
 - 이를 구현하는 과정에서의 라이브러리 및 DBMS등의 사용은 자신이 원하는데로 한다.
+
+### API 정리
+
+1. URL 생성
+
+- POST [{host}/]
+    ```json
+    {
+      "url" : "https://www.naver.com"
+    }
+    ```
+- RESPONSE
+    - STATUS:201
+      ```json
+      {
+        "path": "R0MwTW04"
+      }
+      ```
+
+2. 생성된 Short URL로 이동
+
+- GET [{host}/{{path}}]
+- RESPONSE
+    - STATUS:303
+- EXCEPTION
+    - STATUS:404
+      ```json
+      {
+        "notFoundResource": "NOT_EXISTS"
+      }
+      ```
+
+3. 짧은 URL에 쌓인 로그 조회
+
+- GET [{host}/shorts/{path}/logs]
+- RESPONSE
+    - STATUS:200
+      ```json
+        {
+          "data": {
+          "path": "NUdpN0JW",
+          "requestCount": 1,
+          "url": "https://www.naver.com",
+          "logs": [
+              {
+                  "ip": "127.0.0.1",
+                  "referer": null
+              }
+          ]
+          },
+          "transactionTime": "2021-03-31T16:24:46.459485",
+          "message": "OK"
+        }
+      ```
+- EXCEPTION
+    - STATUS:404
+      ```json
+      {
+        "notFoundResource": "NOT_EXISTS"
+      }
+      ```
 
 ---
 

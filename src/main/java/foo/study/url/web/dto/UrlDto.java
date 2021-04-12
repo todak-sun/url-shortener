@@ -1,33 +1,69 @@
 package foo.study.url.web.dto;
 
-import foo.study.url.domain.ShortenURL;
+import foo.study.url.domain.entities.ShortURL;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class UrlDto {
     public static class Req {
+
+        @NoArgsConstructor
+        @Getter
+        @Setter
         public static class Create {
             private String url;
 
-            public void setUrl(String url) {
+            public Create(String url) {
                 this.url = url;
-            }
-
-            public String getUrl() {
-                return url;
             }
         }
     }
 
     public static class Res {
+        @Getter
+        @AllArgsConstructor
         public static class Create {
+            private String path;
+        }
+
+        @Getter
+        @AllArgsConstructor
+        public static class GetShortURL {
+            private String path;
+            private long requestCount;
             private String url;
 
-            public Create(ShortenURL shortenURL) {
-                this.url = shortenURL.getUrl();
-            }
-
-            public String getUrl() {
-                return url;
+            public GetShortURL(ShortURL shortURL) {
+                this.path = shortURL.getPath();
+                this.requestCount = shortURL.getRequestCount();
+                this.url = shortURL.getOriginURL().getUrl();
             }
         }
+
+        @Getter
+        @AllArgsConstructor
+        public static class GetShortURLWithLog {
+            private String path;
+            private long requestCount;
+            private String url;
+
+            private List<LogDto.Res.Get> logs;
+
+            public GetShortURLWithLog(ShortURL shortURL) {
+                this.path = shortURL.getPath();
+                this.requestCount = shortURL.getRequestCount();
+                this.url = shortURL.getOriginURL().getUrl();
+
+                this.logs = shortURL.getRequestLogs().stream().map(LogDto.Res.Get::new)
+                        .collect(Collectors.toList());
+            }
+
+        }
     }
+
 }

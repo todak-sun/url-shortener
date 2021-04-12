@@ -1,5 +1,6 @@
 package foo.study.url.ifs;
 
-public interface IdGenerator {
+@Deprecated
+public interface PathGenerator {
     String generate(String origin);
 }

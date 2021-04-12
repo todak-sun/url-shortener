@@ -1,9 +1,12 @@
 package foo.study.url.web;
 
-import foo.study.url.domain.ShortenURL;
-import foo.study.url.domain.UrlRepository;
-import foo.study.url.exception.NotFoundException;
+import foo.study.url.domain.entities.ShortURL;
+import foo.study.url.service.UrlService;
+import foo.study.url.web.dto.ClientInfo;
+import foo.study.url.web.dto.Response;
 import foo.study.url.web.dto.UrlDto;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,52 +17,60 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
+@RequiredArgsConstructor
 @RequestMapping("/")
 @RestController
 public class UrlApiController {
 
-    private final UrlRepository urlRepository;
-
-    public UrlApiController(UrlRepository urlRepository) {
-        this.urlRepository = urlRepository;
-    }
+    private final UrlService urlService;
 
     @PostMapping
     public ResponseEntity<?> create(@RequestBody UrlDto.Req.Create req) {
-        ShortenURL save = urlRepository.save(new ShortenURL(req.getUrl()));
-        UrlDto.Res.Create res = new UrlDto.Res.Create(save);
+        ShortURL shortURL = urlService.createShortURL(req.getUrl());
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(res);
-
+                .body(new UrlDto.Res.Create(shortURL.getPath()));
     }
 
-    @GetMapping("/logs")
-    public ResponseEntity<?> fetchAll() {
-        List<UrlDto.Res.Create> res = urlRepository.findAll().stream().map(UrlDto.Res.Create::new).collect(Collectors.toList());
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(res);
-    }
+    @GetMapping("/{path}") //TODO: 추후 모듈 분리로 이동될 핸들러
+    public ResponseEntity<?> redirect(@PathVariable String path, ClientInfo clientInfo) throws URISyntaxException {
+        log.info("client info : {}", clientInfo);
+        ShortURL shortURL = urlService.fetchShortURLWithOriginURL(path);
+        String redirectURL = shortURL.getOriginURL().getUrl();
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> fetchOne(@PathVariable String id) throws URISyntaxException {
-        ShortenURL shortenURL = urlRepository.findById(id).orElseThrow(() -> {
-            throw new NotFoundException(id);
-        });
+        urlService.saveLog(shortURL, clientInfo);
 
-        URI redirectUri = new URI(shortenURL.getUrl());
+        URI redirectUri = new URI(redirectURL);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(redirectUri);
 
         return ResponseEntity
                 .status(HttpStatus.SEE_OTHER)
                 .headers(httpHeaders).build();
+    }
 
+    @GetMapping("/shorts")
+    public ResponseEntity<?> fetchAllPaths() {
+
+        List<UrlDto.Res.GetShortURL> body = urlService.fetchAllShortenURLs()
+                .stream().map(UrlDto.Res.GetShortURL::new)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new Response<>(body, "OK"));
+    }
+
+    @GetMapping("/shorts/{path}/logs")
+    public ResponseEntity<?> fetchShortURLWithLogsByPath(@PathVariable String path) {
+        ShortURL shortURL = urlService.fetchShortURLWithLogsByPath(path);
+        UrlDto.Res.GetShortURLWithLog data = new UrlDto.Res.GetShortURLWithLog(shortURL);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new Response<>(data, "OK"));
     }
 
     @GetMapping
     public ResponseEntity<?> index() {
         return ResponseEntity.status(HttpStatus.OK).body("hello");
     }
-
 
 }

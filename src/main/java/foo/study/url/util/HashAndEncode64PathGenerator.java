@@ -1,13 +1,14 @@
 package foo.study.url.util;
 
-import foo.study.url.ifs.IdGenerator;
+import foo.study.url.ifs.PathGenerator;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
-public class HashAndEncode64IdGenerator implements IdGenerator {
+@Deprecated
+public class HashAndEncode64PathGenerator implements PathGenerator {
 
     @Override
     public String generate(String origin) {
