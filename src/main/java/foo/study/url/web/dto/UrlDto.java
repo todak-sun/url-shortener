@@ -18,9 +18,12 @@ public class UrlDto {
         @Getter
         @Setter
         public static class Create {
-            @URL(message = "유효한 URL이 아닙니다.")
+
+            @URL(regexp = "^(https?):\\/\\/([^:\\/\\s]+)(:([^\\/]*))?((\\/[^\\s/\\/]+)*)?\\/?([^#\\s\\?]*)(\\?([^#\\s]*))?(#(\\w*))?$",
+                    message = "유효한 URL이 아닙니다.")
             @NotEmpty(message = "URL에는 빈 값이 올 수 없습니다.")
             private String url;
+
             public Create(String url) {
                 this.url = url;
             }

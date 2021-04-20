@@ -1,6 +1,7 @@
 package foo.study.url.web;
 
 import foo.study.url.domain.entities.ShortURL;
+import foo.study.url.exception.InvalidRequestException;
 import foo.study.url.service.UrlService;
 import foo.study.url.web.dto.ClientInfo;
 import foo.study.url.web.dto.Response;
@@ -10,8 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -26,7 +29,12 @@ public class UrlApiController {
     private final UrlService urlService;
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody UrlDto.Req.Create req) {
+    public ResponseEntity<?> create(@Valid @RequestBody UrlDto.Req.Create req, Errors errors) {
+
+        if(errors.hasErrors()){
+            throw new InvalidRequestException(errors.getFieldErrors());
+        }
+
         ShortURL shortURL = urlService.createShortURL(req.getUrl());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new UrlDto.Res.Create(shortURL.getPath()));

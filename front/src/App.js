@@ -31,7 +31,6 @@ const App = () => {
     setIsCreating((status) => !status);
 
     const msg = message.loading('URL을 생성중입니다...', 0);
-
     Object.entries(PROTOCOL).forEach(([key, value]) => {
       if (url.startsWith(value)) {
         const changedUrl = url.replace(value, '');
@@ -44,10 +43,12 @@ const App = () => {
       const {path} = res.data;
       const createdUrl = config.serverHost.redirect.concat('/', path);
       updateUrls((item) => [...item, {key: shortid(), path: path}]);
-
       setResultUrl(createdUrl);
     } catch (e) {
-      console.error(e);
+      const error = e?.response?.data;
+      if(error.length){
+        message.error(`${error[0].message}`)
+      }
     } finally {
       setTimeout(msg, 0);
       setIsCreating((status) => !status);

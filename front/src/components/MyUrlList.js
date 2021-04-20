@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {List, Button, Modal} from 'antd';
+import {List, Button, Modal, message} from 'antd';
 import config from '../config';
 import axios from '../util/axiosInstance';
 
@@ -39,7 +39,10 @@ const MyUrlList = ({data, removeItem}) => {
       const {data} = await axios.get(`/shorts/${path}/logs`);
       setLogData(data);
     } catch (e) {
-      console.error(e);
+      const notFoundResource = e?.response?.data?.notFoundResource
+      if(notFoundResource){
+        message.error(`${notFoundResource}에 기록된 로그 정보가 없습니다.`)
+      }
     }
   };
 
