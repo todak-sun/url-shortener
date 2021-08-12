@@ -28,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @Slf4j
+@DisplayName("UrlApiController 테스트")
 @SpringBootTest
 class UrlApiControllerTest {
 
@@ -68,6 +69,30 @@ class UrlApiControllerTest {
         when.andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.path").exists());
+    }
+
+    @DisplayName("잘못된 URL을 요청하면, 에러메시지를 반환한다.")
+    @Test
+    public void create_test_fail() throws Exception {
+        //given
+        String invalidUrl = "htt:www.naver.com";
+        String body = objectMapper.writeValueAsString(new UrlDto.Req.Create(invalidUrl));
+        log.info("body : {}", body);
+
+        //when
+        ResultActions when = mvc.perform(post("/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(body));
+
+        //then
+        when.andExpect(status().isBadRequest())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$" ).isArray())
+            .andExpect(jsonPath("$[0].rejectedValue"  ).exists())
+                .andExpect(jsonPath("$[0].invalidField"  ).exists())
+                .andExpect(jsonPath("$[0].message"  ).exists())
+        ;
     }
 
     @DisplayName("서버에서 생성한 URL로 요청하면, 원래 주소로 redirect 해준다.")

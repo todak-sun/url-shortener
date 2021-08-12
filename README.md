@@ -1,6 +1,22 @@
 # 간단한 URL 단축 서비스 만들기
 
 2021.03.07 ~
+## 3차시
+
+### 요구사항
+
+1. 화면으로 URL을 생성하고, 로그를 확인할 수 있도록 구성한다.
+2. 원하는 클라우드(또는 서버 호스팅) 을 사용해, 배포를 해본다.
+
+###
+
+- 네이버 클라우드를 활용했습니다.
+- Docker로 Front, Back-end 어플리케이션을 이미지로 빌드한 후 클라우드에서 받은 VM에서 Docker를 통해 실행했습니다.
+ 
+참고 파일 링크
+- [React + Nginx](./front/Dockerfile)
+- [Spring Boot Application](./Dockerfile)
+- [네이버 클라우드에서 docker-compose](./docker-compose.yml)
 
 ## 2차시
 

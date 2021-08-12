@@ -5,7 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.URL;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,6 +18,10 @@ public class UrlDto {
         @Getter
         @Setter
         public static class Create {
+
+            @URL(regexp = "^(https?):\\/\\/([^:\\/\\s]+)(:([^\\/]*))?((\\/[^\\s/\\/]+)*)?\\/?([^#\\s\\?]*)(\\?([^#\\s]*))?(#(\\w*))?$",
+                    message = "유효한 URL이 아닙니다.")
+            @NotEmpty(message = "URL에는 빈 값이 올 수 없습니다.")
             private String url;
 
             public Create(String url) {

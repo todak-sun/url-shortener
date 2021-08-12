@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  url-shorten-front:
+    container_name: url-shorten-front
+    image: todaksun/url-shorten-front:0.1
+    ports:
+      - '80:80'
+
+  url-shorten-back:
+    container_name: url-shorten-back
+    image: todaksun/url-shorten-back:latest
+    ports:
+      - '8080:8080'

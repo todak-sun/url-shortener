@@ -1,11 +1,15 @@
 package foo.study.url.web;
 
+import foo.study.url.exception.InvalidRequestException;
 import foo.study.url.exception.NotFoundException;
 import foo.study.url.web.dto.ErrorDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class ExceptionAdvisor {
@@ -14,6 +18,14 @@ public class ExceptionAdvisor {
     public ResponseEntity<?> notFound(NotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ErrorDto.NotFound(ex.getId()));
+    }
+
+    @ExceptionHandler(InvalidRequestException.class)
+    public ResponseEntity<?> invalidRequestException(InvalidRequestException ex) {
+        List<ErrorDto.InvalidRequestException> collect =
+                ex.getFieldErrors().stream().map(ErrorDto.InvalidRequestException::new).collect(Collectors.toList());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(collect);
     }
 
 }
